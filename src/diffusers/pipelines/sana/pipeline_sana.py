@@ -869,6 +869,13 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             complex_human_instruction=complex_human_instruction,
             lora_scale=lora_scale,
         )
+        print("ENOCDE PROMPT .....", flush=True)
+        print("prompt_embeds", prompt_embeds.shape, flush=True)
+        print("prompt_attention_mask", prompt_attention_mask.shape, flush=True)
+        print("negative_prompt_embeds", negative_prompt_embeds.shape, flush=True)
+        print("negative_prompt_attention_mask", negative_prompt_attention_mask.shape, flush=True)
+
+
         if self.do_classifier_free_guidance:
             prompt_embeds = torch.cat([negative_prompt_embeds, prompt_embeds], dim=0)
             prompt_attention_mask = torch.cat([negative_prompt_attention_mask, prompt_attention_mask], dim=0)
@@ -877,6 +884,9 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
         timesteps, num_inference_steps = retrieve_timesteps(
             self.scheduler, num_inference_steps, device, timesteps, sigmas
         )
+        print("RETRIEVE TIMESTEPS .....", flush=True)
+        print("timesteps", timesteps.shape, flush=True)
+        print("num_inference_steps", num_inference_steps, flush=True)
 
         # 5. Prepare latents.
         latent_channels = self.transformer.config.in_channels
@@ -890,6 +900,9 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             generator,
             latents,
         )
+        print("PREPARE LATENTS .....", flush=True)
+        print("latents", latents.shape, flush=True)
+        print("latent_channels", latent_channels, flush=True)
 
         # 6. Prepare extra step kwargs. TODO: Logic should ideally just be moved out of the pipeline
         extra_step_kwargs = self.prepare_extra_step_kwargs(generator, eta)
