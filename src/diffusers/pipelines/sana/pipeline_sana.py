@@ -922,6 +922,12 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 # broadcast to batch dimension in a way that's compatible with ONNX/Core ML
                 timestep = t.expand(latent_model_input.shape[0]).to(latents.dtype)
 
+                if i == 0:
+                    print("FIRST STEP .....", flush=True)
+                    print("latents", latents.shape, flush=True)
+                    print("latent_model_input", latent_model_input.shape, flush=True)
+                    print("prompt_embeds", prompt_embeds.shape, flush=True)
+
                 # predict noise model_output
                 noise_pred = self.transformer(
                     latent_model_input,
@@ -933,6 +939,10 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 )[0]
                 noise_pred = noise_pred.float()
 
+                if i == 0:
+                    print("NOISE PRED .....", flush=True)
+                    print("noise_pred", noise_pred.shape, flush=True)
+
                 # perform guidance
                 if self.do_classifier_free_guidance:
                     noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
@@ -941,11 +951,13 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 # learned sigma
                 if self.transformer.config.out_channels // 2 == latent_channels:
                     noise_pred = noise_pred.chunk(2, dim=1)[0]
-                else:
-                    noise_pred = noise_pred
+                
 
                 # compute previous image: x_t -> x_t-1
                 latents = self.scheduler.step(noise_pred, t, latents, **extra_step_kwargs, return_dict=False)[0]
+
+                print("SCHEDULER STEP .....", flush=True)
+                print("latents", latents.shape, flush=True)
 
                 if callback_on_step_end is not None:
                     callback_kwargs = {}
@@ -970,6 +982,9 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             latents = latents.to(self.vae.dtype)
             try:
                 image = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=False)[0]
+                print("DECODE .....", flush=True)
+                print("image", image.shape, flush=True)
+                print("latents", latents.shape, flush=True)
             except torch.cuda.OutOfMemoryError as e:
                 warnings.warn(
                     f"{e}. \n"
