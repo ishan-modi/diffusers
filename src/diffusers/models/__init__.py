@@ -135,6 +135,7 @@ if TYPE_CHECKING or DIFFUSERS_SLOW_IMPORT:
             SD3MultiControlNetModel,
             SparseControlNetModel,
             UNetControlNetXSModel,
+            SanaControlNetModel,
         )
         from .embeddings import ImageProjection
         from .modeling_utils import ModelMixin
