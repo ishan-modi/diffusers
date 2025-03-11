@@ -956,8 +956,9 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 # compute previous image: x_t -> x_t-1
                 latents = self.scheduler.step(noise_pred, t, latents, **extra_step_kwargs, return_dict=False)[0]
 
-                print("SCHEDULER STEP .....", flush=True)
-                print("latents", latents.shape, flush=True)
+                if i == 0:
+                    print("SCHEDULER STEP .....", flush=True)
+                    print("latents", latents.shape, flush=True)
 
                 if callback_on_step_end is not None:
                     callback_kwargs = {}
