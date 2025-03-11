@@ -174,7 +174,7 @@ def main(args):
     print(controlnet)
     controlnet.load_state_dict(converted_state_dict, strict=True)
 
-    print(f"Saving Sana ControlNet in Diffusers format in {args.output_path}.")
+    print(f"Saving Sana ControlNet in Diffusers format in {args.dump_path}.")
     controlnet.save_pretrained(args.dump_path)
 
 
