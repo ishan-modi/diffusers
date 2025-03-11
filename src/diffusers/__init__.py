@@ -666,6 +666,7 @@ if TYPE_CHECKING or DIFFUSERS_SLOW_IMPORT:
             PixArtTransformer2DModel,
             PriorTransformer,
             SanaTransformer2DModel,
+            SanaControlNetModel,
             SD3ControlNetModel,
             SD3MultiControlNetModel,
             SD3Transformer2DModel,
