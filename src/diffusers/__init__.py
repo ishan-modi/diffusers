@@ -133,6 +133,7 @@ else:
             "PixArtTransformer2DModel",
             "PriorTransformer",
             "SanaTransformer2DModel",
+            "SanaControlNetModel",
             "SD3ControlNetModel",
             "SD3MultiControlNetModel",
             "SD3Transformer2DModel",
