@@ -157,7 +157,7 @@ def main(args):
             num_cross_attention_heads=model_kwargs[args.model_type]["num_cross_attention_heads"],
             cross_attention_head_dim=model_kwargs[args.model_type]["cross_attention_head_dim"],
             cross_attention_dim=model_kwargs[args.model_type]["cross_attention_dim"],
-            caption_channels=4096,
+            caption_channels=2304,
             sample_size=args.image_size // 32,
             interpolation_scale=interpolation_scale[args.image_size],
         )
