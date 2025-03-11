@@ -171,8 +171,11 @@ def main(args):
 
     controlnet = controlnet.to(weight_dtype)
     print(controlnet)
-    if args.dump_path is not None:
-        controlnet.save_pretrained(args.dump_path)
+    controlnet.load_state_dict(converted_state_dict, strict=True)
+
+    print(f"Saving SD3 ControlNet in Diffusers format in {args.output_path}.")
+    controlnet.save_pretrained(args.dump_path)
+
 
 DTYPE_MAPPING = {
     "fp32": torch.float32,
