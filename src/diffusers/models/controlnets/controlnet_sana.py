@@ -52,7 +52,7 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         num_cross_attention_heads: Optional[int] = 20,
         cross_attention_head_dim: Optional[int] = 112,
         cross_attention_dim: Optional[int] = 2240,
-        caption_channels: int = 4096,
+        caption_channels: int = 2304,
         mlp_ratio: float = 2.5,
         dropout: float = 0.0,
         attention_bias: bool = False,
