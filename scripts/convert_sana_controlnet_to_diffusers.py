@@ -79,6 +79,9 @@ def main(args):
 
     # y norm
     converted_state_dict["caption_norm.weight"] = state_dict.pop("attention_y_norm.weight")
+    
+    # Positional embedding interpolation scale.
+    interpolation_scale = {512: None, 1024: None, 2048: 1.0, 4096: 2.0}
 
     for depth in range(7):
         # Transformer blocks.
