@@ -83,6 +83,10 @@ def main(args):
     # Positional embedding interpolation scale.
     interpolation_scale = {512: None, 1024: None, 2048: 1.0, 4096: 2.0}
 
+    # ControlNet Input Projection.
+    converted_state_dict["input_block.weight"] = state_dict.pop("controlnet.0.before_proj.weight")
+    converted_state_dict["input_block.bias"] = state_dict.pop("controlnet.0.before_proj.bias")
+
     for depth in range(7):
         # Transformer blocks.
         converted_state_dict[f"transformer_blocks.{depth}.scale_shift_table"] = state_dict.pop(
@@ -140,24 +144,21 @@ def main(args):
             f"controlnet.{depth}.copied_block.cross_attn.proj.bias"
         )
 
+        # ControlNet After Projection
+        converted_state_dict[f"controlnet_blocks.{depth}.weight"] = state_dict.pop(f"controlnet.{depth}.after_proj.weight")
+        converted_state_dict[f"controlnet_blocks.{depth}.bias"] = state_dict.pop(f"controlnet.{depth}.after_proj.bias")
+
     # ControlNet
     with CTX():
         controlnet = SanaControlNetModel(
-            in_channels=32,
-            out_channels=32,
             num_attention_heads=model_kwargs[args.model_type]["num_attention_heads"],
             attention_head_dim=model_kwargs[args.model_type]["attention_head_dim"],
             num_layers=model_kwargs[args.model_type]["num_layers"],
             num_cross_attention_heads=model_kwargs[args.model_type]["num_cross_attention_heads"],
             cross_attention_head_dim=model_kwargs[args.model_type]["cross_attention_head_dim"],
             cross_attention_dim=model_kwargs[args.model_type]["cross_attention_dim"],
-            caption_channels=2304,
-            mlp_ratio=2.5,
-            attention_bias=False,
+            caption_channels=4096,
             sample_size=args.image_size // 32,
-            patch_size=1,
-            norm_elementwise_affine=False,
-            norm_eps=1e-6,
             interpolation_scale=interpolation_scale[args.image_size],
         )
 
