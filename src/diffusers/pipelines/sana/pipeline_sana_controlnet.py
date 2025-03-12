@@ -985,7 +985,7 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 timestep = t.expand(latent_model_input.shape[0]).to(latents.dtype)
 
                 # controlnet(s) inference
-                control_block_samples = self.controlnet(
+                controlnet_block_samples = self.controlnet(
                     latent_model_input,
                     encoder_hidden_states=prompt_embeds,
                     encoder_attention_mask=prompt_attention_mask,
@@ -1004,7 +1004,7 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                     timestep=timestep,
                     return_dict=False,
                     attention_kwargs=self.attention_kwargs,
-                    control_block_samples=control_block_samples,
+                    controlnet_block_samples=controlnet_block_samples,
                 )[0]
                 noise_pred = noise_pred.float()
 
