@@ -48,7 +48,7 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         out_channels: Optional[int] = 32,
         num_attention_heads: int = 70,
         attention_head_dim: int = 32,
-        num_controlnet_layers: int = 7,
+        num_layers: int = 7,
         num_cross_attention_heads: Optional[int] = 20,
         cross_attention_head_dim: Optional[int] = 112,
         cross_attention_dim: Optional[int] = 2240,
@@ -100,7 +100,7 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
                     norm_eps=norm_eps,
                     mlp_ratio=mlp_ratio,
                 )
-                for _ in range(num_controlnet_layers)
+                for _ in range(num_layers)
             ]
         )
 
@@ -245,7 +245,6 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         # 2. Transformer blocks
         block_res_samples = ()
         for block in self.transformer_blocks:
-            print("ControlNet block", flush=True)
             if torch.is_grad_enabled() and self.gradient_checkpointing:
                 hidden_states = self._gradient_checkpointing_func(
                     block,
@@ -268,7 +267,7 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
                     post_patch_width,
                 )
             block_res_samples = block_res_samples + (hidden_states,)
-        
+
         # 3. ControlNet blocks
         controlnet_block_res_samples = ()
         for block_res_sample, controlnet_block in zip(block_res_samples, self.controlnet_blocks):
