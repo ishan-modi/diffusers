@@ -245,6 +245,7 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         # 2. Transformer blocks
         block_res_samples = ()
         for block in self.transformer_blocks:
+            print("ControlNet block", flush=True)
             if torch.is_grad_enabled() and self.gradient_checkpointing:
                 hidden_states = self._gradient_checkpointing_func(
                     block,
