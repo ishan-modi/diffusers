@@ -458,7 +458,7 @@ class SanaTransformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
                     post_patch_height,
                     post_patch_width,
                 )
-            if controlnet_block_samples is not None and 0 <= index_block <= len(controlnet_block_samples):
+            if controlnet_block_samples is not None and 0 < index_block <= len(controlnet_block_samples):
                 hidden_states = hidden_states + controlnet_block_samples[index_block - 1]
 
         # 3. Normalization
