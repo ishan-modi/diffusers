@@ -204,8 +204,8 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
         text_encoder: Gemma2PreTrainedModel,
         vae: AutoencoderDC,
         transformer: SanaTransformer2DModel,
-        controlnet: SanaControlNetModel,
         scheduler: DPMSolverMultistepScheduler,
+        controlnet: SanaControlNetModel,
     ):
         super().__init__()
 
@@ -214,8 +214,8 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             text_encoder=text_encoder,
             vae=vae,
             transformer=transformer,
-            controlnet=controlnet,
-            scheduler=scheduler
+            scheduler=scheduler,
+            controlnet=controlnet
         )
 
         self.vae_scale_factor = (
