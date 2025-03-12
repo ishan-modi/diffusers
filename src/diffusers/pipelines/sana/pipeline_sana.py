@@ -202,7 +202,7 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
         self,
         tokenizer: Union[GemmaTokenizer, GemmaTokenizerFast],
         text_encoder: Gemma2PreTrainedModel,
-        vae: AutoencoderDC,
+        vae: AutoencoderKL,
         transformer: SanaTransformer2DModel,
         scheduler: DPMSolverMultistepScheduler,
     ):
