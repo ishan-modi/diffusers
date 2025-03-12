@@ -48,7 +48,7 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         out_channels: Optional[int] = 32,
         num_attention_heads: int = 70,
         attention_head_dim: int = 32,
-        num_layers: int = 7,
+        num_controlnet_layers: int = 7,
         num_cross_attention_heads: Optional[int] = 20,
         cross_attention_head_dim: Optional[int] = 112,
         cross_attention_dim: Optional[int] = 2240,
@@ -100,7 +100,7 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
                     norm_eps=norm_eps,
                     mlp_ratio=mlp_ratio,
                 )
-                for _ in range(num_layers)
+                for _ in range(num_controlnet_layers)
             ]
         )
 

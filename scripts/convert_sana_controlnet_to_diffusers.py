@@ -220,7 +220,7 @@ if __name__ == "__main__":
             "num_cross_attention_heads": 20,
             "cross_attention_head_dim": 112,
             "cross_attention_dim": 2240,
-            "num_layers": 7,
+            "num_controlnet_layers": 7,
         },
         "SanaMS_600M_P1_ControlNet_D7": {
             "num_attention_heads": 36,
@@ -228,7 +228,7 @@ if __name__ == "__main__":
             "num_cross_attention_heads": 16,
             "cross_attention_head_dim": 72,
             "cross_attention_dim": 1152,
-            "num_layers": 7,
+            "num_controlnet_layers": 7,
         },
     }
 
