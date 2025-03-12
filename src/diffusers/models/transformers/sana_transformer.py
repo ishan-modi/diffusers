@@ -153,6 +153,7 @@ class SanaTransformerBlock(nn.Module):
     def forward(
         self,
         hidden_states: torch.Tensor,
+        attention_mask: Optional[torch.Tensor] = None,
         encoder_hidden_states: Optional[torch.Tensor] = None,
         encoder_attention_mask: Optional[torch.Tensor] = None,
         timestep: Optional[torch.LongTensor] = None,
