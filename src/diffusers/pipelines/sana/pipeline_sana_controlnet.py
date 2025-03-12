@@ -942,7 +942,7 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             )
             height, width = control_image.shape[-2:]
 
-            control_image = self.vae.encode(control_image)
+            control_image = self.vae.encode(control_image).latent
             control_image = control_image * self.vae.config.scaling_factor
 
         else:
