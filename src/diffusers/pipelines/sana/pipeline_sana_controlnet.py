@@ -25,7 +25,7 @@ from transformers import Gemma2PreTrainedModel, GemmaTokenizer, GemmaTokenizerFa
 from ...callbacks import MultiPipelineCallbacks, PipelineCallback
 from ...image_processor import PipelineImageInput, PixArtImageProcessor
 from ...loaders import SanaLoraLoaderMixin
-from ...models import AutoencoderKL, SanaTransformer2DModel, SanaControlNetModel
+from ...models import AutoencoderDC, SanaTransformer2DModel, SanaControlNetModel
 from ...schedulers import DPMSolverMultistepScheduler
 from ...utils import (
     BACKENDS_MAPPING,
@@ -202,7 +202,7 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
         self,
         tokenizer: Union[GemmaTokenizer, GemmaTokenizerFast],
         text_encoder: Gemma2PreTrainedModel,
-        vae: AutoencoderKL,
+        vae: AutoencoderDC,
         transformer: SanaTransformer2DModel,
         controlnet: SanaControlNetModel,
         scheduler: DPMSolverMultistepScheduler,
@@ -942,7 +942,7 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             )
             height, width = control_image.shape[-2:]
 
-            control_image = self.vae.encode(control_image).latent_dist.sample()
+            control_image = self.vae.encode(control_image)
             control_image = control_image * self.vae.config.scaling_factor
 
         else:

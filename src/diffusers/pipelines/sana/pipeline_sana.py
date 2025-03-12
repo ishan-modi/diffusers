@@ -25,7 +25,7 @@ from transformers import Gemma2PreTrainedModel, GemmaTokenizer, GemmaTokenizerFa
 from ...callbacks import MultiPipelineCallbacks, PipelineCallback
 from ...image_processor import PixArtImageProcessor
 from ...loaders import SanaLoraLoaderMixin
-from ...models import AutoencoderKL, SanaTransformer2DModel
+from ...models import AutoencoderDC, SanaTransformer2DModel
 from ...schedulers import DPMSolverMultistepScheduler
 from ...utils import (
     BACKENDS_MAPPING,
@@ -202,7 +202,7 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
         self,
         tokenizer: Union[GemmaTokenizer, GemmaTokenizerFast],
         text_encoder: Gemma2PreTrainedModel,
-        vae: AutoencoderKL,
+        vae: AutoencoderDC,
         transformer: SanaTransformer2DModel,
         scheduler: DPMSolverMultistepScheduler,
     ):
