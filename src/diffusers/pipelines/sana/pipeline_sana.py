@@ -916,10 +916,10 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 if self.interrupt:
                     continue
                 
-                if i == 0:
-                    print(latent_model_input.dtype, flush=True)
 
                 latent_model_input = torch.cat([latents] * 2) if self.do_classifier_free_guidance else latents
+                if i == 0:
+                    print(latent_model_input.dtype, flush=True)
                 latent_model_input = latent_model_input.to(prompt_embeds.dtype)
 
                 # broadcast to batch dimension in a way that's compatible with ONNX/Core ML
