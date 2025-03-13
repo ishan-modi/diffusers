@@ -436,7 +436,6 @@ class SanaTransformer2DModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
 
         # 2. Transformer blocks
         for index_block, block in enumerate(self.transformer_blocks):
-            print("BaseModel Block", index_block, flush=True)
             if torch.is_grad_enabled() and self.gradient_checkpointing:
                 hidden_states = self._gradient_checkpointing_func(
                     block,
