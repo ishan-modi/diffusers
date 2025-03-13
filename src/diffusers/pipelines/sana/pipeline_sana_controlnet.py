@@ -936,14 +936,13 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 batch_size=batch_size * num_images_per_prompt,
                 num_images_per_prompt=num_images_per_prompt,
                 device=device,
-                dtype=self.dtype,
+                dtype=self.vae.dtype,
                 do_classifier_free_guidance=self.do_classifier_free_guidance,
                 guess_mode=False,
             )
             height, width = control_image.shape[-2:]
 
-            print(control_image.dtype, flush=True)
-            control_image = self.vae.encode(control_image.to(self.vae.dtype)).latent
+            control_image = self.vae.encode(control_image).latent
             control_image = control_image * self.vae.config.scaling_factor
 
         else:
