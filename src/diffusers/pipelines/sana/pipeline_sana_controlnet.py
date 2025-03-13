@@ -978,11 +978,17 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 if self.interrupt:
                     continue
 
+                if i == 0:
+                    print(latent_model_input.dtype, flush=True)
+                    
                 latent_model_input = torch.cat([latents] * 2) if self.do_classifier_free_guidance else latents
                 latent_model_input = latent_model_input.to(prompt_embeds.dtype)
 
                 # broadcast to batch dimension in a way that's compatible with ONNX/Core ML
                 timestep = t.expand(latent_model_input.shape[0]).to(latents.dtype)
+
+                if i == 0:
+                    print(latent_model_input.dtype, flush=True)
 
                 # controlnet(s) inference
                 controlnet_block_samples = self.controlnet(
