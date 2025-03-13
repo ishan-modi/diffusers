@@ -915,6 +915,9 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             for i, t in enumerate(timesteps):
                 if self.interrupt:
                     continue
+                
+                if i == 0:
+                    print(latent_model_input.dtype, flush=True)
 
                 latent_model_input = torch.cat([latents] * 2) if self.do_classifier_free_guidance else latents
                 latent_model_input = latent_model_input.to(prompt_embeds.dtype)
@@ -923,6 +926,7 @@ class SanaPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 timestep = t.expand(latent_model_input.shape[0]).to(latents.dtype)
 
                 if i == 0:
+                    print(latent_model_input.dtype, flush=True)
                     print("FIRST STEP .....", flush=True)
                     print("latents", latents.shape, flush=True)
                     print("latent_model_input", latent_model_input.shape, flush=True)
