@@ -86,15 +86,6 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         self.caption_projection = PixArtAlphaTextProjection(in_features=caption_channels, hidden_size=inner_dim)
         self.caption_norm = RMSNorm(inner_dim, eps=1e-5, elementwise_affine=True)
 
-        # controlnet_blocks
-        self.controlnet_blocks = nn.ModuleList([])
-
-        self.input_block = zero_module(nn.Linear(inner_dim, inner_dim))
-        for _ in range(num_layers):
-            controlnet_block = nn.Linear(inner_dim, inner_dim)
-            controlnet_block = zero_module(controlnet_block)
-            self.controlnet_blocks.append(controlnet_block)
-
         # 3. Transformer blocks
         self.transformer_blocks = nn.ModuleList(
             [
@@ -114,6 +105,15 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
                 for _ in range(num_layers)
             ]
         )
+
+        # controlnet_blocks
+        self.controlnet_blocks = nn.ModuleList([])
+
+        self.input_block = zero_module(nn.Linear(inner_dim, inner_dim))
+        for _ in range(len(self.transformer_blocks)):
+            controlnet_block = nn.Linear(inner_dim, inner_dim)
+            controlnet_block = zero_module(controlnet_block)
+            self.controlnet_blocks.append(controlnet_block)
 
         self.gradient_checkpointing = False
 
