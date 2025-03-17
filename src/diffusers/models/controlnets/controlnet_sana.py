@@ -90,7 +90,7 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         self.controlnet_blocks = nn.ModuleList([])
 
         self.input_block = zero_module(nn.Linear(inner_dim, inner_dim))
-        for _ in range(len(self.transformer_blocks)):
+        for _ in range(len(num_layers)):
             controlnet_block = nn.Linear(inner_dim, inner_dim)
             controlnet_block = zero_module(controlnet_block)
             self.controlnet_blocks.append(controlnet_block)
@@ -114,8 +114,6 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
                 for _ in range(num_layers)
             ]
         )
-
-        
 
         self.gradient_checkpointing = False
 
