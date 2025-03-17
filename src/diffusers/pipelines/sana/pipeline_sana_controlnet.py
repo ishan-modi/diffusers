@@ -111,17 +111,30 @@ EXAMPLE_DOC_STRING = """
     Examples:
         ```py
         >>> import torch
-        >>> from diffusers import SanaPipeline
+        >>> from diffusers import SanaControlNetModel, SanaControlNetPipeline
+        >>> from diffusers.utils import load_image
 
-        >>> pipe = SanaPipeline.from_pretrained(
-        ...     "Efficient-Large-Model/Sana_1600M_1024px_BF16_diffusers", torch_dtype=torch.float32
+        >>> controlnet = SanaControlNetModel.from_pretrained(
+        ...     "ishan24/Sana_600M_1024px_ControlNet_diffusers", torch_dtype=torch.bfloat16
+        ... )
+        >>> pipe = SanaControlNetPipeline.from_pretrained(
+        ...     "Efficient-Large-Model/Sana_600M_1024px_diffusers",
+        ...     variant="fp16",
+        ...     torch_dtype=torch.float16,
+        ...     controlnet=controlnet,
         ... )
         >>> pipe.to("cuda")
+        >>> pipe.vae.to(torch.bfloat16)
         >>> pipe.text_encoder.to(torch.bfloat16)
-        >>> pipe.transformer = pipe.transformer.to(torch.bfloat16)
-
-        >>> image = pipe(prompt='a cyberpunk cat with a neon sign that says "Sana"')[0]
-        >>> image[0].save("output.png")
+        >>> cond_image = load_image(
+        ...     "https://huggingface.co/ishan24/Sana_600M_1024px_ControlNet_diffusers/resolve/main/hed_example.png"
+        ... )
+        >>> prompt = 'a cat with a neon sign that says "Sana"'
+        >>> image = pipe(
+        ...     prompt,
+        ...     control_image=cond_image,
+        ... ).images[0]
+        >>> image.save("output.png")
         ```
 """
 
@@ -210,12 +223,12 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
         super().__init__()
 
         self.register_modules(
-            tokenizer=tokenizer, 
+            tokenizer=tokenizer,
             text_encoder=text_encoder,
             vae=vae,
             transformer=transformer,
             controlnet=controlnet,
-            scheduler=scheduler
+            scheduler=scheduler,
         )
 
         self.vae_scale_factor = (
@@ -978,17 +991,11 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
                 if self.interrupt:
                     continue
 
-                    
                 latent_model_input = torch.cat([latents] * 2) if self.do_classifier_free_guidance else latents
-                if i == 0:
-                    print(latent_model_input.dtype, flush=True)
                 latent_model_input = latent_model_input.to(prompt_embeds.dtype)
 
                 # broadcast to batch dimension in a way that's compatible with ONNX/Core ML
                 timestep = t.expand(latent_model_input.shape[0]).to(latents.dtype)
-
-                if i == 0:
-                    print(latent_model_input.dtype, flush=True)
 
                 # controlnet(s) inference
                 controlnet_block_samples = self.controlnet(
@@ -1047,18 +1054,10 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
             image = latents
         else:
             latents = latents.to(self.vae.dtype)
-            try:
-                image = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=False)[0]
-            except torch.cuda.OutOfMemoryError as e:
-                warnings.warn(
-                    f"{e}. \n"
-                    f"Try to use VAE tiling for large images. For example: \n"
-                    f"pipe.vae.enable_tiling(tile_sample_min_width=512, tile_sample_min_height=512)"
-                )
+            image = self.vae.decode(latents / self.vae.config.scaling_factor, return_dict=False)[0]
             if use_resolution_binning:
                 image = self.image_processor.resize_and_crop_tensor(image, orig_width, orig_height)
 
-        if not output_type == "latent":
             image = self.image_processor.postprocess(image, output_type=output_type)
 
         # Offload all models

@@ -2,19 +2,12 @@
 from __future__ import annotations
 
 import argparse
-import os
 from contextlib import nullcontext
 
 import torch
 from accelerate import init_empty_weights
-from huggingface_hub import hf_hub_download, snapshot_download
-from termcolor import colored
-from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from diffusers import (
-    AutoencoderDC,
-    DPMSolverMultistepScheduler,
-    FlowMatchEulerDiscreteScheduler,
     SanaControlNetModel,
 )
 from diffusers.models.modeling_utils import load_model_dict_into_meta
@@ -23,37 +16,15 @@ from diffusers.utils.import_utils import is_accelerate_available
 
 CTX = init_empty_weights if is_accelerate_available else nullcontext
 
-ckpt_ids = [
-    "Efficient-Large-Model/Sana_1600M_1024px_BF16_ControlNet_HED/checkpoints/Sana_1600M_1024px_BF16_ControlNet_HED.pth",
-    "Efficient-Large-Model/Sana_600M_1024px_ControlNet_HED/checkpoints/Sana_600M_1024px_ControlNet_HED.pth",
-]
-
 
 def main(args):
-    cache_dir_path = os.path.expanduser("~/.cache/huggingface/hub")
+    file_path = args.orig_ckpt_path
 
-    if args.orig_ckpt_path is None or args.orig_ckpt_path in ckpt_ids:
-        ckpt_id = args.orig_ckpt_path or ckpt_ids[0]
-        snapshot_download(
-            repo_id=f"{'/'.join(ckpt_id.split('/')[:2])}",
-            cache_dir=cache_dir_path,
-            repo_type="model",
-        )
-        file_path = hf_hub_download(
-            repo_id=f"{'/'.join(ckpt_id.split('/')[:2])}",
-            filename=f"{'/'.join(ckpt_id.split('/')[2:])}",
-            cache_dir=cache_dir_path,
-            repo_type="model",
-        )
-    else:
-        file_path = args.orig_ckpt_path
-
-    print(colored(f"Loading checkpoint from {file_path}", "green", attrs=["bold"]))
     all_state_dict = torch.load(file_path, weights_only=True)
     state_dict = all_state_dict.pop("state_dict")
     converted_state_dict = {}
 
-     # Patch embeddings.
+    # Patch embeddings.
     converted_state_dict["patch_embed.proj.weight"] = state_dict.pop("x_embedder.proj.weight")
     converted_state_dict["patch_embed.proj.bias"] = state_dict.pop("x_embedder.proj.bias")
 
@@ -79,7 +50,6 @@ def main(args):
 
     # y norm
     converted_state_dict["caption_norm.weight"] = state_dict.pop("attention_y_norm.weight")
-    
     # Positional embedding interpolation scale.
     interpolation_scale = {512: None, 1024: None, 2048: 1.0, 4096: 2.0}
 
@@ -128,7 +98,9 @@ def main(args):
         q = state_dict.pop(f"controlnet.{depth}.copied_block.cross_attn.q_linear.weight")
         q_bias = state_dict.pop(f"controlnet.{depth}.copied_block.cross_attn.q_linear.bias")
         k, v = torch.chunk(state_dict.pop(f"controlnet.{depth}.copied_block.cross_attn.kv_linear.weight"), 2, dim=0)
-        k_bias, v_bias = torch.chunk(state_dict.pop(f"controlnet.{depth}.copied_block.cross_attn.kv_linear.bias"), 2, dim=0)
+        k_bias, v_bias = torch.chunk(
+            state_dict.pop(f"controlnet.{depth}.copied_block.cross_attn.kv_linear.bias"), 2, dim=0
+        )
 
         converted_state_dict[f"transformer_blocks.{depth}.attn2.to_q.weight"] = q
         converted_state_dict[f"transformer_blocks.{depth}.attn2.to_q.bias"] = q_bias
@@ -145,7 +117,9 @@ def main(args):
         )
 
         # ControlNet After Projection
-        converted_state_dict[f"controlnet_blocks.{depth}.weight"] = state_dict.pop(f"controlnet.{depth}.after_proj.weight")
+        converted_state_dict[f"controlnet_blocks.{depth}.weight"] = state_dict.pop(
+            f"controlnet.{depth}.after_proj.weight"
+        )
         converted_state_dict[f"controlnet_blocks.{depth}.bias"] = state_dict.pop(f"controlnet.{depth}.after_proj.bias")
 
     # ControlNet
@@ -171,7 +145,6 @@ def main(args):
     print(f"Total number of controlnet parameters: {num_model_params}")
 
     controlnet = controlnet.to(weight_dtype)
-    print(controlnet)
     controlnet.load_state_dict(converted_state_dict, strict=True)
 
     print(f"Saving Sana ControlNet in Diffusers format in {args.dump_path}.")
@@ -195,7 +168,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
-        "--orig_ckpt_path", default=None, type=str, required=False, help="Path to the checkpoint to convert."
+        "--orig_ckpt_path", default=None, type=str, required=True, help="Path to the checkpoint to convert."
     )
     parser.add_argument(
         "--image_size",
@@ -206,7 +179,10 @@ if __name__ == "__main__":
         help="Image size of pretrained model, 512, 1024, 2048 or 4096.",
     )
     parser.add_argument(
-        "--model_type", default="SanaMS_1600M_P1_ControlNet_D7", type=str, choices=["SanaMS_1600M_P1_ControlNet_D7", "SanaMS_600M_P1_ControlNet_D7"]
+        "--model_type",
+        default="SanaMS_1600M_P1_ControlNet_D7",
+        type=str,
+        choices=["SanaMS_1600M_P1_ControlNet_D7", "SanaMS_600M_P1_ControlNet_D7"],
     )
     parser.add_argument("--dump_path", default=None, type=str, required=True, help="Path to the output pipeline.")
     parser.add_argument("--dtype", default="fp16", type=str, choices=["fp32", "fp16", "bf16"], help="Weight dtype.")
