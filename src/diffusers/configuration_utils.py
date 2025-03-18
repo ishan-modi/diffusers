@@ -461,9 +461,10 @@ class ConfigMixin:
     @classmethod
     def extract_init_dict(cls, config_dict, **kwargs):
         # Skip keys that were not present in the original config, so default __init__ values were used
+        print(config_dict, flush=True)
         used_defaults = config_dict.get("_use_default_values", [])
         config_dict = {k: v for k, v in config_dict.items() if k not in used_defaults and k != "_use_default_values"}
-
+        print(config_dict, flush=True)
         # 0. Copy origin config dict
         original_dict = dict(config_dict.items())
 
@@ -491,6 +492,7 @@ class ConfigMixin:
         else:
             compatible_classes = []
 
+        print(compatible_classes, flush=True)
         expected_keys_comp_cls = set()
         for c in compatible_classes:
             expected_keys_c = cls._get_init_keys(c)
