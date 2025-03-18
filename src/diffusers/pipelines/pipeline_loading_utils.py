@@ -740,7 +740,7 @@ def load_sub_model(
         # else load from the root directory
         loaded_sub_model = load_method(cached_folder, **loading_kwargs)
 
-    print("Loaded Sub Model", loaded_sub_model, flush=True)
+    print("Loaded Sub Model", name, flush=True)
     if isinstance(loaded_sub_model, torch.nn.Module) and isinstance(device_map, dict):
         # remove hooks
         remove_hook_from_module(loaded_sub_model, recurse=True)
