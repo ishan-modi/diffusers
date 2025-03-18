@@ -860,6 +860,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
         # in this case they are already instantiated in `kwargs`
         # extract them here
         expected_modules, optional_kwargs = cls._get_signature_keys(pipeline_class)
+        print(expected_modules, init_dict)
         expected_types = pipeline_class._get_signature_types()
         passed_class_obj = {k: kwargs.pop(k) for k in expected_modules if k in kwargs}
         passed_pipe_kwargs = {k: kwargs.pop(k) for k in optional_kwargs if k in kwargs}
