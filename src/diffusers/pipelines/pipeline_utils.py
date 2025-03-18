@@ -900,6 +900,7 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
         # import it here to avoid circular import
         from diffusers import pipelines
 
+        print("init dict", init_dict, flush=True)
         # 6. device map delegation
         final_device_map = None
         if device_map is not None:
