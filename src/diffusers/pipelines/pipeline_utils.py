@@ -900,7 +900,6 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
         # import it here to avoid circular import
         from diffusers import pipelines
 
-        print("init dict", init_dict, flush=True)
         # 6. device map delegation
         final_device_map = None
         if device_map is not None:
@@ -921,7 +920,6 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
             )
 
         # 7. Load each module in the pipeline
-        print("passed_class_obj", passed_class_obj, flush=True)
         current_device_map = None
         for name, (library_name, class_name) in logging.tqdm(init_dict.items(), desc="Loading pipeline components..."):
             # 7.1 device_map shenanigans
