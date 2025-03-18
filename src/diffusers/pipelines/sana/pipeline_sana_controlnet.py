@@ -208,7 +208,7 @@ class SanaControlNetPipeline(DiffusionPipeline, SanaLoraLoaderMixin):
     bad_punct_regex = re.compile(r"[" + "#®•©™&@·º½¾¿¡§~" + r"\)" + r"\(" + r"\]" + r"\[" + r"\}" + r"\{" + r"\|" + "\\" + r"\/" + r"\*" + r"]{1,}")
     # fmt: on
 
-    model_cpu_offload_seq = "text_encoder->transformer->vae"
+    model_cpu_offload_seq = "text_encoder->controlnet->transformer->vae"
     _callback_tensor_inputs = ["latents", "control_image", "prompt_embeds", "negative_prompt_embeds"]
 
     def __init__(
