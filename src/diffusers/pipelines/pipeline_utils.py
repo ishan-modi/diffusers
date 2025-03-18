@@ -937,7 +937,8 @@ class DiffusionPipeline(ConfigMixin, PushToHubMixin):
             is_pipeline_module = hasattr(pipelines, library_name)
             importable_classes = ALL_IMPORTABLE_CLASSES
             loaded_sub_model = None
-
+            
+            print("passed_class_obj", passed_class_obj, flush=True)
             # 7.4 Use passed sub model or load class_name from library_name
             if name in passed_class_obj:
                 # if the model is in a pipeline module, then we load it from the pipeline

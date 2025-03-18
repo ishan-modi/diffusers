@@ -518,7 +518,7 @@ def _assign_components_to_devices(
             # Update the device memory.
             device_memory[device_id] -= component_memory
             current_device_index += 1
-
+    print("Device ID Component Mapping", device_id_component_mapping, flush=True)
     return device_id_component_mapping
 
 
@@ -585,11 +585,14 @@ def _get_final_device_map(device_map, pipeline_class, passed_class_obj, init_dic
         if isinstance(module, torch.nn.Module)
     }
     module_sizes = dict(sorted(module_sizes.items(), key=lambda item: item[1], reverse=True))
+    print("Module Sizes", module_sizes, flush=True)
 
     # Obtain maximum memory available per device (GPUs only).
+    print("Max Memory", max_memory, flush=True)
     max_memory = get_max_memory(max_memory)
     max_memory = dict(sorted(max_memory.items(), key=lambda item: item[1], reverse=True))
     max_memory = {k: v for k, v in max_memory.items() if k != "cpu"}
+    print("Max Memory GPUs", max_memory, flush=True)
 
     # Obtain a dictionary mapping the model-level components to the available
     # devices based on the maximum memory and the model sizes.
@@ -604,7 +607,7 @@ def _get_final_device_map(device_map, pipeline_class, passed_class_obj, init_dic
         for device_id, components in device_id_component_mapping.items():
             for component in components:
                 final_device_map[component] = device_id
-
+    print("Final Device Map", final_device_map, flush=True)
     return final_device_map
 
 
@@ -668,6 +671,8 @@ def load_sub_model(
         )
 
     load_method = _get_load_method(class_obj, load_method_name, is_dduf=dduf_entries is not None)
+    print("Class Obj", class_obj, flush=True)
+    print("Load Method", load_method, flush=True)
 
     # add kwargs to loading method
     diffusers_module = importlib.import_module(__name__.split(".")[0])

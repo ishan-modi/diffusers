@@ -232,12 +232,12 @@ class SanaControlNetModel(ModelMixin, ConfigMixin, PeftAdapterMixin):
         p = self.config.patch_size
         post_patch_height, post_patch_width = height // p, width // p
 
-        print(hidden_states.device, flush=True)
-        print(controlnet_cond.device, flush=True)
-        print(self.input_block.weight.device, flush=True)
-        print(self.patch_embed.proj.weight.device, flush=True)
-        print(encoder_hidden_states.device, flush=True)
-        print(self.caption_projection.linear_1.weight.device, flush=True)
+        # print(hidden_states.device, flush=True)
+        # print(controlnet_cond.device, flush=True)
+        # print(self.input_block.weight.device, flush=True)
+        # print(self.patch_embed.proj.weight.device, flush=True)
+        # print(encoder_hidden_states.device, flush=True)
+        # print(self.caption_projection.linear_1.weight.device, flush=True)
         
         controlnet_cond = controlnet_cond.to(hidden_states.dtype)
         controlnet_cond = self.patch_embed(controlnet_cond)
