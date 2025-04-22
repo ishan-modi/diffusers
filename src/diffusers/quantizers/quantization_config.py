@@ -759,7 +759,7 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
         self.quant_type = quant_type
         self.type_bit_map = {
             "FP8": (4, 3),
-            "INT8": 8,
+            # "INT8": 8, # TODO: enable this upon modelopt release https://github.com/NVIDIA/TensorRT-Model-Optimizer/pull/166
             "INT4": 4,
             "NF4": 4,
             "NVFP4": (2,1),
@@ -822,8 +822,9 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
         act_type = parts[1].replace("A", "") if len(parts) > 1 else None
         for k in quant_cfg:
             if "enable" not in quant_cfg[k]:
-                if k == "*input_quantizer" and act_type is not None:
-                    quant_cfg[k]["num_bits"] = self.type_bit_map[act_type]
+                if k == "*input_quantizer":
+                    if act_type is not None:
+                        quant_cfg[k]["num_bits"] = self.type_bit_map[act_type]
                     continue
                 quant_cfg[k]["num_bits"] = self.type_bit_map[w_type]
 
