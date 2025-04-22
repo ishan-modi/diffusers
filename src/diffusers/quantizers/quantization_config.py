@@ -748,13 +748,13 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
             The channel quantization axis, useful for quantizing models across different axes.
         block_quantize (`int`, *optional*, default to `None`):
             The block size, useful to further quantize each channel/axes into blocks.
-        modelopt_config (`dict`, *optional*, default to `None`):
-            The modelopt config, useful for passing custom configs to modelopt.
         algorithm (`str`, *optional*, default to `"max"`):
             The algorithm to use for quantization, currently only supports `"max"`.
+        modelopt_config (`dict`, *optional*, default to `None`):
+            The modelopt config, useful for passing custom configs to modelopt.
     """
 
-    def __init__(self, quant_type: str, modules_to_not_convert: Optional[List[str]] = None, weight_only: bool=True, channel_quantize: Optional[int] = None, block_quantize: Optional[int] = None, modelopt_config: Optional[dict] = None, algorithm: str = "max", **kwargs) -> None:
+    def __init__(self, quant_type: str, modules_to_not_convert: Optional[List[str]] = None, weight_only: bool=True, channel_quantize: Optional[int] = None, block_quantize: Optional[int] = None, algorithm: str = "max", modelopt_config: Optional[dict] = None, **kwargs) -> None:
         self.quant_method = QuantizationMethod.MODELOPT
         self.quant_type = quant_type
         self.type_bit_map = {
@@ -790,8 +790,8 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
         self.weight_only = weight_only
         self.channel_quantize = channel_quantize
         self.block_quantize = block_quantize
-        self.modelopt_config = self.get_config_from_quant_type() if not modelopt_config else modelopt_config
         self.algorithm = algorithm
+        self.modelopt_config = self.get_config_from_quant_type() if not modelopt_config else modelopt_config
 
     def get_config_from_quant_type(self) -> Dict[str, Any]:
         """
