@@ -141,7 +141,9 @@ class NVIDIAModelOptQuantizer(DiffusersQuantizer):
         # ModelOpt imports diffusers internally. This is here to prevent circular imports
         import modelopt.torch.opt as mto
         import modelopt.torch.quantization as mtq
-
+        import modelopt.torch.quantization.extensions as ext
+        
+        ext.precompile()
         self.modules_to_not_convert = self.quantization_config.modules_to_not_convert
 
         if not isinstance(self.modules_to_not_convert, list):
