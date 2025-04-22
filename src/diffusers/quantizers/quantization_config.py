@@ -845,10 +845,11 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
             BASE_CONFIG["quant_cfg"]["*weight_quantizer"]["block_sizes"].update({"scale_bits":8, "scale_block_sizes": {-1: 4}})
         elif "NVFP4" in w_type:
             BASE_CONFIG["quant_cfg"]["*weight_quantizer"]["block_sizes"].update({"scale_bits":(4,3)})
-        if "NF4" in act_type:
-            BASE_CONFIG["quant_cfg"]["*input_quantizer"]["block_sizes"].update({"scale_bits":8, "scale_block_sizes": {-1: 4}})
-        elif "NVFP4" in act_type:
-            BASE_CONFIG["quant_cfg"]["*input_quantizer"]["block_sizes"].update({"scale_bits":(4,3)})
+        if act_type:
+            if "NF4" in act_type:
+                BASE_CONFIG["quant_cfg"]["*input_quantizer"]["block_sizes"].update({"scale_bits":8, "scale_block_sizes": {-1: 4}})
+            elif "NVFP4" in act_type:
+                BASE_CONFIG["quant_cfg"]["*input_quantizer"]["block_sizes"].update({"scale_bits":(4,3)})
 
 
         if self.modules_to_not_convert is not None:
