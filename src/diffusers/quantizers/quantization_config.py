@@ -833,11 +833,12 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
                 self.channel_quantize: self.block_quantize
             }
             quant_cfg["*input_quantizer"]["block_sizes"] = {
-                self.channel_quantize: self.block_quantize
+                self.channel_quantize: self.block_quantize, "type": "dynamic"
             }
         elif self.channel_quantize:
             quant_cfg["*weight_quantizer"]["axis"] = self.channel_quantize
             quant_cfg["*input_quantizer"]["axis"] = self.channel_quantize
+            quant_cfg["*input_quantizer"]["type"] = "dynamic"
 
         # Only fixed sizes are supported for now in modelopt
         if "NF4" in w_type:
