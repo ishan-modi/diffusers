@@ -812,7 +812,7 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
         }
 
         quant_cfg = BASE_CONFIG["quant_cfg"]
-        if "WO" in self.quant_type:
+        if self.weight_only:
             for k in quant_cfg:
                 if "*weight_quantizer" not in k:
                     quant_cfg[k]["enable"] = False
@@ -827,6 +827,16 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
                         quant_cfg[k]["num_bits"] = self.type_bit_map[act_type]
                     continue
                 quant_cfg[k]["num_bits"] = self.type_bit_map[w_type]
+        
+        # Only fixed sizes are supported for now in modelopt
+        if "NF4" in w_type:
+            BASE_CONFIG["quant_cfg"]["*weight_quantizer"]["block_sizes"].update({"scale_bits":8, "scale_block_sizes": {-1: 4}})
+        elif "NVFP4" in w_type:
+            BASE_CONFIG["quant_cfg"]["*weight_quantizer"]["block_sizes"].update({"scale_bits":(4,3)})
+        if "NF4" in act_type:
+            BASE_CONFIG["quant_cfg"]["*input_quantizer"]["block_sizes"].update({"scale_bits":8, "scale_block_sizes": {-1: 4}})
+        elif "NVFP4" in act_type:
+            BASE_CONFIG["quant_cfg"]["*input_quantizer"]["block_sizes"].update({"scale_bits":(4,3)})
 
         if self.block_quantize and self.channel_quantize:
             quant_cfg["*weight_quantizer"]["block_sizes"] = {
