@@ -816,14 +816,14 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
         quant_cfg = BASE_CONFIG["quant_cfg"]
         if self.weight_only:
             for k in quant_cfg:
-                if "*weight_quantizer" not in k:
+                if "*weight_quantizer" not in k and not quant_cfg[k]:
                     quant_cfg[k]["enable"] = False
 
         parts = self.quant_type.split("_")
         w_type = parts[0]
         act_type = parts[1].replace("A", "") if len(parts) > 1 else None
         for k in quant_cfg:
-            if "enable" not in quant_cfg[k]:
+            if k not in mtq.config._default_disabled_quantizer_cfg and "enable" not in quant_cfg[k]:
                 if k == "*input_quantizer":
                     if act_type is not None:
                         quant_cfg[k]["num_bits"] = self.type_bit_map[act_type]
