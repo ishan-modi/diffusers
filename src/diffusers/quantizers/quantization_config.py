@@ -849,6 +849,7 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
             if "NF4" in act_type:
                 BASE_CONFIG["quant_cfg"]["*input_quantizer"]["block_sizes"].update({"scale_bits":8, "scale_block_sizes": {self.channel_quantize: self.block_quantize}})
             elif "NVFP4" in act_type:
+                BASE_CONFIG["quant_cfg"]["*input_quantizer"]["type"] = "dynamic"
                 BASE_CONFIG["quant_cfg"]["*input_quantizer"]["block_sizes"].update({"scale_bits":(4,3)})
 
         if self.modules_to_not_convert is not None:
