@@ -797,6 +797,8 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
         """
         Get the config from the quantization type.
         """
+        import modelopt.torch.quantization as mtq
+        
         BASE_CONFIG = {
             "quant_cfg": {
                 "*weight_quantizer": {"fake_quant": False},
@@ -806,7 +808,7 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
                 "*k_bmm_quantizer": {},
                 "*v_bmm_quantizer": {},
                 "*softmax_quantizer": {},
-                "default": {"enable": False},
+                **mtq.config._default_disabled_quantizer_cfg,
             },
             "algorithm": self.algorithm,
         }
