@@ -699,7 +699,7 @@ class QuantoConfig(QuantizationConfigMixin):
     Args:
         weights_dtype (`str`, *optional*, defaults to `"int8"`):
             The target dtype for the weights after quantization. Supported values are ("float8","int8","int4","int2")
-        modules_to_not_convert (`list`, *optional*, default to `None`):
+       modules_to_not_convert (`list`, *optional*, default to `None`):
             The list of modules to not quantize, useful for quantizing models that explicitly require to have some
             modules left in their original precision (e.g. Whisper encoder, Llava encoder, Mixtral gate layers).
     """
@@ -761,7 +761,7 @@ class NVIDIAModelOptConfig(QuantizationConfigMixin):
             "FP8": (4, 3),
             # "INT8": 8, # TODO: enable this upon modelopt release https://github.com/NVIDIA/TensorRT-Model-Optimizer/pull/166
             "INT4": 4,
-            "NF4": 4,
+            # "NF4": 4,  # TODO: enable this upon modelopt release https://github.com/NVIDIA/TensorRT-Model-Optimizer/issues/183
             "NVFP4": (2,1),
         }
 
