@@ -295,6 +295,9 @@ def load_model_dict_into_meta(
         elif is_quantized and (
             hf_quantizer.check_if_quantized_param(model, param, param_name, state_dict, param_device=param_device)
         ):
+            print('Quantized param', flush=True)
+            print(param_name, flush=True)
+            print(param_device, flush=True)
             hf_quantizer.create_quantized_param(
                 model, param, param_name, param_device, state_dict, unexpected_keys, dtype=dtype
             )
