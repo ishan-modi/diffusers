@@ -93,12 +93,20 @@ class NVIDIAModelOptQuantizer(DiffusersQuantizer):
         # ModelOpt imports diffusers internally. This is here to prevent circular imports
         import modelopt.torch.quantization as mtq
 
+
+        print(param_name, flush=True)
+        print(target_device, flush=True)
+        
+
         dtype = kwargs.get("dtype", torch.float32)
         module, tensor_name = get_module_from_name(model, param_name)
         if self.pre_quantized:
             setattr(module, tensor_name, param_value)
         else:
+            print(module, flush=True)
+            print(tensor_name, flush=True)
             set_module_tensor_to_device(model, param_name, target_device, param_value, dtype)
+            print(param_value.device, flush=True)
             mtq.calibrate(module, self.quantization_config.modelopt_config["algorithm"], self.quantization_config.forward_loop)
             mtq.compress(module)
             module.weight.requires_grad = False
