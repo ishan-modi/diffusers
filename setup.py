@@ -132,7 +132,7 @@ _deps = [
     "gguf>=0.10.0",
     "torchao>=0.7.0",
     "bitsandbytes>=0.43.3",
-    "nvidia_modelopt[torch, hf]>=0.27.0",
+    "nvidia_modelopt[hf]>=0.27.0",
     "regex!=2019.12.17",
     "requests",
     "tensorboard",
@@ -152,7 +152,9 @@ _deps = [
 # packaging: "packaging"
 #
 # some of the values are versioned whereas others aren't.
-deps = {b: a for a, b in (re.findall(r"^(([^!=<>~]+)(?:[!=<>~].*)?$)", x)[0] for x in _deps)}
+deps = {
+    b: a for a, b in (re.findall(r"^(([^!=<>~]+)(?:[!=<>~].*)?$)", x)[0] for x in _deps)
+}
 
 # since we save this data in src/diffusers/dependency_versions_table.py it can be easily accessed from
 # anywhere. If you need to quickly access the data from this table in a shell, you can do so easily with:
@@ -217,7 +219,9 @@ class DepsTableUpdateCommand(Command):
 extras = {}
 extras["quality"] = deps_list("urllib3", "isort", "ruff", "hf-doc-builder")
 extras["docs"] = deps_list("hf-doc-builder")
-extras["training"] = deps_list("accelerate", "datasets", "protobuf", "tensorboard", "Jinja2", "peft")
+extras["training"] = deps_list(
+    "accelerate", "datasets", "protobuf", "tensorboard", "Jinja2", "peft"
+)
 extras["test"] = deps_list(
     "compel",
     "GitPython",
@@ -253,7 +257,12 @@ else:
     extras["flax"] = deps_list("jax", "jaxlib", "flax")
 
 extras["dev"] = (
-    extras["quality"] + extras["test"] + extras["training"] + extras["docs"] + extras["torch"] + extras["flax"]
+    extras["quality"]
+    + extras["test"]
+    + extras["training"]
+    + extras["docs"]
+    + extras["torch"]
+    + extras["flax"]
 )
 
 install_requires = [
@@ -287,7 +296,9 @@ setup(
     python_requires=">=3.8.0",
     install_requires=list(install_requires),
     extras_require=extras,
-    entry_points={"console_scripts": ["diffusers-cli=diffusers.commands.diffusers_cli:main"]},
+    entry_points={
+        "console_scripts": ["diffusers-cli=diffusers.commands.diffusers_cli:main"]
+    },
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
